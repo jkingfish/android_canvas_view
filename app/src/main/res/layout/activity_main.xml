@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF6600"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:padding="10dp"
+        android:gravity="center_horizontal|bottom">
+
+        <com.dragonarmy.drawing.test.testdrawingapp.CanvasView
+            android:id="@+id/canvas"
+            android:layout_width="0dp"
+            android:layout_height="400dp"
+            android:layout_weight=".9"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:onClick="clearCanvas"
+        android:text="Reset" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_toRightOf="@id/button1"
+        android:onClick="pickColor"
+        android:text="Pick Color" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_toRightOf="@id/button2"
+        android:onClick="softBrush"
+        android:text="Soft Brush" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_toRightOf="@id/button3"
+        android:onClick="addImage"
+        android:text="Add Image" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_below="@id/button1"
+        android:onClick="addText"
+        android:text="Add Text" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_toRightOf="@id/button5"
+        android:layout_below="@id/button1"
+        android:onClick="erase"
+        android:text="Erase" />
+
+    <Button
+        android:id="@+id/button7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_toRightOf="@id/button6"
+        android:layout_below="@id/button1"
+        android:onClick="point"
+        android:text="Select" />
+
+</RelativeLayout>
