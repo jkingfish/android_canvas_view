@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -10,81 +10,175 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="1"
-        android:padding="10dp"
-        android:gravity="center_horizontal|bottom">
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-        <com.dragonarmy.drawing.test.testdrawingapp.CanvasView
-            android:id="@+id/canvas"
-            android:layout_width="0dp"
-            android:layout_height="400dp"
-            android:layout_weight=".9"
-            android:textColor="#FFFFFF" />
+        <ImageView
+            android:id="@+id/btn_delete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="deleteCanvas"
+            android:src="@drawable/ic_delete_white_48dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btn_undo"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="10dp"
+                android:onClick="undoStep"
+                android:src="@drawable/ic_undo_white_48dp" />
+
+            <ImageView
+                android:id="@+id/btn_redo"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="10dp"
+                android:onClick="redoStep"
+                android:src="@drawable/ic_redo_white_48dp" />
+
+            <ImageView
+                android:id="@+id/btn_save"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="10dp"
+                android:onClick="saveCanvas"
+                android:src="@drawable/ic_save_white_48dp" />
+
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:onClick="clearCanvas"
-        android:text="Reset" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_toRightOf="@id/button1"
-        android:onClick="pickColor"
-        android:text="Pick Color" />
+        <com.dragonarmy.drawing.test.testdrawingapp.SquaredFrameLayout
+            android:id="@+id/vPhotoRoot"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_toRightOf="@id/button2"
-        android:onClick="softBrush"
-        android:text="Soft Brush" />
+            <com.dragonarmy.drawing.test.testdrawingapp.CanvasView
+                android:id="@+id/canvas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="#FFFFFF" />
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_toRightOf="@id/button3"
-        android:onClick="addImage"
-        android:text="Add Image" />
+        </com.dragonarmy.drawing.test.testdrawingapp.SquaredFrameLayout>
 
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_below="@id/button1"
-        android:onClick="addText"
-        android:text="Add Text" />
+        <LinearLayout
+            android:id="@+id/llAddText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tw__solid_white"
+            android:gravity="center_vertical"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:visibility="gone">
 
-    <Button
-        android:id="@+id/button6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_toRightOf="@id/button5"
-        android:layout_below="@id/button1"
-        android:onClick="erase"
-        android:text="Erase" />
+            <EditText
+                android:id="@+id/etAddText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#555555"
+                android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/button7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_toRightOf="@id/button6"
-        android:layout_below="@id/button1"
-        android:onClick="point"
-        android:text="Select" />
+            <Button
+                android:id="@+id/btnSendText"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="8dp"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:onClick="addText"
+                android:text="Enter"/>
 
-</RelativeLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/btn_clear"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="clearCanvas"
+            android:src="@drawable/ic_clear_white_48dp" />
+
+        <ImageView
+            android:id="@+id/btn_palette"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="pickColor"
+            android:src="@drawable/ic_palette_white_48dp"/>
+
+        <ImageView
+            android:id="@+id/btn_pencil"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="pencil"
+            android:src="@drawable/ic_create_white_48dp" />
+
+        <ImageView
+            android:id="@+id/btn_brush"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="softBrush"
+            android:src="@drawable/ic_brush_white_48dp" />
+
+        <ImageView
+            android:id="@+id/btn_images"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="addImage"
+            android:src="@drawable/ic_image_white_48dp" />
+
+        <ImageView
+            android:id="@+id/btn_text"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="addText"
+            android:src="@drawable/ic_text_format_white_48dp" />
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/button6"-->
+            <!--android:layout_width="36dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:onClick="erase"-->
+            <!--android:src="@drawable/ic_brush_white_48dp" />-->
+
+        <ImageView
+            android:id="@+id/btn_move"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="10dp"
+            android:onClick="point"
+            android:src="@drawable/ic_gamepad_white_48dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

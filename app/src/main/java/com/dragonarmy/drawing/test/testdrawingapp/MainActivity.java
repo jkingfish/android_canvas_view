@@ -1,6 +1,7 @@
 package com.dragonarmy.drawing.test.testdrawingapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
@@ -19,6 +24,7 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import io.fabric.sdk.android.Fabric;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Random;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
@@ -32,10 +38,14 @@ public class MainActivity extends Activity {
 
 
     private CanvasView canvas = null;
+    private LinearLayout addTextView;
+    private EditText addText;
+    private Button addTextButton;
     private AmbilWarnaDialog dialog;
     private int lastColor = 0xff000000;
 
     private static final int SELECT_PHOTO = 100;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +56,32 @@ public class MainActivity extends Activity {
 
         // Create the instance of CanvasView
         this.canvas = (CanvasView)this.findViewById(R.id.canvas);
+        this.addTextView = (LinearLayout)this.findViewById(R.id.llAddText);
+        this.addText = (EditText)this.findViewById(R.id.etAddText);
+        this.addTextButton = (Button)this.findViewById(R.id.btnSendText);
+        addTextButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (addText.getText().toString() != "") {
+                    canvas.setText(addText.getText().toString());
+                    addText.setText("");
+                    addTextView.setVisibility(View.GONE);
+
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(addText.getWindowToken(), 0);
+
+                    HashMap textHash = new HashMap();
+                    textHash.put("text", canvas.getText());
+                    textHash.put("x", 200f);
+                    textHash.put("y", 200f);
+
+                    canvas.updateHistory(null, null, textHash);
+
+                    canvas.invalidate();
+
+                    canvas.setMode(CanvasView.Mode.POINTER);
+                }
+            }
+        });
     }
 
     public void clearCanvas(View v) {
@@ -74,6 +110,12 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
+    public void pencil(View v) {
+        canvas.setMode(CanvasView.Mode.DRAW);
+        canvas.setPaintStrokeWidth(3f);
+        canvas.setBlur(0f);
+    }
+
     public void softBrush(View v) {
         canvas.setMode(CanvasView.Mode.DRAW);
         canvas.setPaintStrokeWidth(8f);
@@ -87,8 +129,8 @@ public class MainActivity extends Activity {
     }
 
     public void addText(View v) {
-        canvas.setText("Hello World");
         canvas.setMode(CanvasView.Mode.TEXT);
+        this.addTextView.setVisibility(View.VISIBLE);
     }
 
     public void erase(View v) {
@@ -99,6 +141,22 @@ public class MainActivity extends Activity {
 
     public void point(View v) {
         canvas.setMode(CanvasView.Mode.POINTER);
+    }
+
+    public void deleteCanvas(View v) {
+
+    }
+
+    public void undoStep(View v) {
+       canvas.undo();
+    }
+
+    public void redoStep(View v) {
+        canvas.redo();
+    }
+
+    public void saveCanvas(View v) {
+
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -89,7 +90,7 @@ public class CanvasView extends View {
     private String text           = "";
     private Typeface fontFamily   = Typeface.DEFAULT;
     private float fontSize        = 32F;
-    private Paint.Align textAlign = Paint.Align.RIGHT;  // fixed
+    private Paint.Align textAlign = Paint.Align.LEFT;  // fixed
     private Paint textPaint       = new Paint();
     private float textX           = 0F;
     private float textY           = 0F;
@@ -222,20 +223,23 @@ public class CanvasView extends View {
      * @param bitmapHash the instance of Bitmap
      * @param textHash the instance of Bitmap
      */
-    private void updateHistory(Path path, HashMap bitmapHash, HashMap textHash) {
+    public void updateHistory(Path path, HashMap bitmapHash, HashMap textHash) {
+
+        // Clear the time stream if changing history after Undo
+        if (this.historyPointer < this.pathLists.size()) {
+            for(int i = this.pathLists.size(); i > this.historyPointer; i--) {
+                this.pathLists.remove(i-1);
+                this.bitmapLists.remove(i-1);
+                this.textLists.remove(i-1);
+                this.paintLists.remove(i-1);
+            }
+        }
+
         if(path != null) {
             if (this.historyPointer == this.pathLists.size()) {
                 this.pathLists.add(path);
                 this.paintLists.add(this.createPaint());
-            } else {
-                // On the way of Undo or Redo
-                this.pathLists.set(this.historyPointer, path);
-                this.paintLists.set(this.historyPointer, this.createPaint());
-
-                for (int i = this.historyPointer, size = this.paintLists.size(); i < size; i++) {
-                    this.pathLists.remove(this.historyPointer);
-                    this.paintLists.remove(this.historyPointer);
-                }
+                this.historyPointer++;
             }
         } else {
             this.pathLists.add(null);
@@ -245,15 +249,7 @@ public class CanvasView extends View {
             if (this.historyPointer == this.bitmapLists.size()) {
                 this.bitmapLists.add(bitmapHash);
                 this.paintLists.add(null);
-            } else {
-                // On the way of Undo or Redo
-                this.bitmapLists.set(this.historyPointer, bitmapHash);
-                this.paintLists.set(this.historyPointer, null);
-
-                for (int i = this.historyPointer, size = this.bitmapLists.size(); i < size; i++) {
-                    this.bitmapLists.remove(this.historyPointer);
-                    this.paintLists.remove(this.historyPointer);
-                }
+                this.historyPointer++;
             }
         } else {
             this.bitmapLists.add(null);
@@ -263,21 +259,17 @@ public class CanvasView extends View {
             if (this.historyPointer == this.textLists.size()) {
                 this.textLists.add(textHash);
                 this.paintLists.add(this.createPaint());
-            } else {
-                // On the way of Undo or Redo
-                this.textLists.set(this.historyPointer, textHash);
-                this.paintLists.set(this.historyPointer, this.createPaint());
-
-                for (int i = this.historyPointer, size = this.textLists.size(); i < size; i++) {
-                    this.textLists.remove(this.historyPointer);
-                    this.paintLists.remove(this.historyPointer);
-                }
+                this.historyPointer++;
             }
         } else {
             this.textLists.add(null);
         }
 
-        this.historyPointer++;
+        Log.d("****HISTORY", Integer.toString(this.historyPointer));
+        Log.d("****PATHS", Integer.toString(this.pathLists.size()) + " - " + this.pathLists);
+        Log.d("****BITMAPS", Integer.toString(this.bitmapLists.size()) + " - " + this.bitmapLists);
+        Log.d("****TEXTS", Integer.toString(this.textLists.size()) + " - " + this.textLists);
+        Log.d("****PAINTS", Integer.toString(this.paintLists.size()) + " - " + this.paintLists);
     }
 
     /**
@@ -306,29 +298,31 @@ public class CanvasView extends View {
 
         this.textPaint = paint;
 
-        Paint paintForMeasureText = new Paint();
+//        Paint paintForMeasureText = new Paint();
 
         // Line break automatically
-        float textLength   = paintForMeasureText.measureText(this.text);
-        float lengthOfChar = textLength / (float)this.text.length();
-        float restWidth    = this.canvas.getWidth() - textX;  // text-align : right
-        int numChars       = (lengthOfChar <= 0) ? 1 : (int)Math.floor((double)(restWidth / lengthOfChar));  // The number of characters at 1 line
-        int modNumChars    = (numChars < 1) ? 1 : numChars;
-        float y            = textY;
+//        float textLength   = paintForMeasureText.measureText(this.text);
+//        float lengthOfChar = textLength / (float)this.text.length();
+//        float restWidth    = this.canvas.getWidth() - textX;  // text-align : right
+//        int numChars       = (lengthOfChar <= 0) ? 1 : (int)Math.floor((double)(restWidth / lengthOfChar));  // The number of characters at 1 line
+//        int modNumChars    = (numChars < 1) ? 1 : numChars;
+//        float y            = textY;
+//
+//        for (int i = 0, len = this.text.length(); i < len; i += modNumChars) {
+//            String substring = "";
+//
+//            if ((i + modNumChars) < len) {
+//                substring = this.text.substring(i, (i + modNumChars));
+//            } else {
+//                substring = this.text.substring(i, len);
+//            }
+//
+//            y += this.fontSize;
+//
+//            canvas.drawText(substring, textX, y, this.textPaint);
+//        }
 
-        for (int i = 0, len = this.text.length(); i < len; i += modNumChars) {
-            String substring = "";
-
-            if ((i + modNumChars) < len) {
-                substring = this.text.substring(i, (i + modNumChars));
-            } else {
-                substring = this.text.substring(i, len);
-            }
-
-            y += this.fontSize;
-
-            canvas.drawText(substring, textX, y, this.textPaint);
-        }
+        canvas.drawText(this.text, textX, textY, this.textPaint);
     }
 
     /**
@@ -363,8 +357,8 @@ public class CanvasView extends View {
 
                 break;
             case TEXT   :
-                this.startX = event.getX();
-                this.startY = event.getY();
+//                this.startX = event.getX();
+//                this.startY = event.getY();
 
                 break;
             case POINTER :
@@ -375,6 +369,7 @@ public class CanvasView extends View {
                         float borderRight = (float) this.bitmapLists.get(i).get("x") + bitmap.getWidth();
                         float borderTop = (float) this.bitmapLists.get(i).get("y");
                         float borderBotom = (float) this.bitmapLists.get(i).get("y") + bitmap.getWidth();
+
                         if((xTouch >= borderLeft && xTouch <= borderRight) && yTouch >= borderTop && yTouch <= borderBotom) {
                             this.bitmapLists.add(this.bitmapLists.get(i));
                             this.bitmapLists.remove(i);
@@ -390,6 +385,39 @@ public class CanvasView extends View {
                             this.touchOffsetX = xTouch - (int)borderLeft;
                             this.touchOffsetY = yTouch - (int)borderTop;
 
+                        }
+                    }
+
+                    if(this.textLists.get(i) != null) {
+                        Paint paintForMeasureText = this.paintLists.get(i);
+                        Rect bounds = new Rect();
+
+                        paintForMeasureText.getTextBounds(text, 0, text.length(), bounds);
+
+
+                        float borderLeft = (float) this.textLists.get(i).get("x") - 10;
+                        float borderRight = (float) this.textLists.get(i).get("x") + bounds.width();
+                        float borderTop = (float) this.textLists.get(i).get("y") - 10;
+                        float borderBotom = (float) this.textLists.get(i).get("y") + bounds.height();
+
+                        Log.d("***TEXT: ", "left - " + borderLeft + "right - " + borderRight + "top - " + borderTop + "bottom - " + borderBotom );
+                        Log.d("***TOUCH: ", "x - " + xTouch + ", y - " + yTouch );
+
+                        if((xTouch >= borderLeft && xTouch <= borderRight) && yTouch >= borderTop && yTouch <= borderBotom) {
+                            Log.d("***TEXT: ", "Touched");
+                            this.bitmapLists.add(null);
+                            this.bitmapLists.remove(i);
+                            this.paintLists.add(this.paintLists.get(i));
+                            this.paintLists.remove(i);
+                            this.pathLists.add(null);
+                            this.pathLists.remove(i);
+                            this.textLists.add(this.textLists.get(i));
+                            this.textLists.remove(i);
+
+                            touchObjectIndex = this.textLists.size()-1;
+                            touchObjectType = objType.TEXT;
+                            this.touchOffsetX = xTouch - (int)borderLeft;
+                            this.touchOffsetY = yTouch - (int)borderTop;
                         }
                     }
                 }
@@ -464,8 +492,8 @@ public class CanvasView extends View {
 
                 break;
             case TEXT :
-                this.startX = xTouch;
-                this.startY = yTouch;
+//                this.startX = xTouch;
+//                this.startY = yTouch;
 
                 break;
             case POINTER :
@@ -475,6 +503,13 @@ public class CanvasView extends View {
                             if(this.bitmapLists.size() > 0) {
                                 this.bitmapLists.get(touchObjectIndex).put("x", xTouch-this.touchOffsetX);
                                 this.bitmapLists.get(touchObjectIndex).put("y", yTouch-this.touchOffsetY);
+                                this.invalidate();
+                            }
+                            break;
+                        case TEXT:
+                            if(this.textLists.size() > 0) {
+                                this.textLists.get(touchObjectIndex).put("x", xTouch-this.touchOffsetX);
+                                this.textLists.get(touchObjectIndex).put("y", yTouch-this.touchOffsetY);
                                 this.invalidate();
                             }
                             break;
@@ -511,14 +546,14 @@ public class CanvasView extends View {
         switch (this.mode) {
             case TEXT :
 
-                HashMap textHash = new HashMap();
-                textHash.put("text", this.text);
-                textHash.put("x", xTouch);
-                textHash.put("y", yTouch);
-
-                this.updateHistory(null, null, textHash);
-
-                this.invalidate();
+//                HashMap textHash = new HashMap();
+//                textHash.put("text", this.text);
+//                textHash.put("x", xTouch);
+//                textHash.put("y", yTouch);
+//
+//                this.updateHistory(null, null, textHash);
+//
+//                this.invalidate();
 
                 break;
             case POINTER :
@@ -564,8 +599,6 @@ public class CanvasView extends View {
                 this.drawText(canvas, textX, textY, paintText);
             }
         }
-
-//        this.drawText(canvas);
 
         this.canvas = canvas;
     }
@@ -934,7 +967,14 @@ public class CanvasView extends View {
      * @param bitmap
      */
     public void drawBitmap(Bitmap bitmap, float x, float y) {
-        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
+
+        int targetWidth = 150;
+        double aspectRatio = (double) bitmap.getHeight() / (double) bitmap.getWidth();
+        int targetHeight = (int) (targetWidth * aspectRatio);
+        bitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
+
+
+//        bitmap = Bitmap.createScaledBitmap(bitmap, 125, 100, true);
 
         this.bitmapX = x;
         this.bitmapY = y;
